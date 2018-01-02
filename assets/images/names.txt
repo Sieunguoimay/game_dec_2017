@@ -1,0 +1,5 @@
+assets/images/player.png
+assets/images/bg.png
+assets/images/insideBrick.png
+assets/images/wallBrick.png
+assets/images/outsideBrick.png
