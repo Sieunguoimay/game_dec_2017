@@ -70,6 +70,8 @@ void Texture::render(vec2&pos,Size&size,double angle,int index){
 //whenever using vec2-pos as position parameter
 //in other case, use the above function to render with the actual position - top-left 
 void Texture::render(vec2 pos,Size size,double angle,int index){
+	if(size.w==-1) size.w = sprite.w;
+	if(size.h==-1) size.h = sprite.h;
 	SDL_Rect rect = getRect(
 		(pos.x-size.w/2)*drawRatio.x,(pos.y-size.h/2)*drawRatio.y,
 		size.w*drawRatio.x,size.h*drawRatio.y);

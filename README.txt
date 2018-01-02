@@ -21,3 +21,6 @@ what gonna do for the stage 1 - Setup Programming Environment:
 30/12/2017
 	- in windows dir /b >> names.txt
 	- in ubuntu printf '%s\n' * >> names.txt
+2/1/2017
+	Uploaded onto Github - available online access :))
+	g++ src/*.cpp -o bin/main -IE:/SDL_HOME/include -LE:/SDL_HOME/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image

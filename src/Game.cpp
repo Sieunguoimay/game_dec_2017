@@ -2,7 +2,7 @@
 
 Game::Game(Assets&assets)
 :assets(&assets)
-,player(vec2(500,200),assets.getTexture("player").getSize())
+,player(vec2(500,200),Size(assets.getTexture("player").getSize().w*0.75,assets.getTexture("player").getSize().h*0.75))
 ,player2(vec2(500,200),assets.getTexture("player").getSize())
 {
 	environment.putBricks(assets.getMap(),assets.getTexture("wallBrick").getSize());
@@ -46,7 +46,7 @@ void Game::handleEvent(SDL_Event&event){
 }
 void Game::draw(SDL_Renderer*renderer){
 	environment.draw(*assets);
-	assets->getTexture("player").render(player.getPosition().x,player.getPosition().y,-1,-1,player.getAngle());
+	assets->getTexture("player").render(player.getPosition(),Size(-1,-1),player.getAngle());
 }
 void Game::update(){
 	environment.wallCollide(player);

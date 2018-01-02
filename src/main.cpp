@@ -28,8 +28,8 @@ void load_data(){
 		return initiated;});
 
 	std::cout<<"Loading Data...\n";
-	assets.loadMap("../project_dec_2017/assets/map.txt");
-	assets.loadTextures("../project_dec_2017/assets/images/names.txt",renderer,renderer_mutex,windowSize);
+	assets.loadMap("../game_dec_2017/assets/map.txt");
+	assets.loadTextures("../game_dec_2017/assets/images/names.txt",renderer,renderer_mutex,windowSize);
 	loaded = true;
 
 	lk.unlock();

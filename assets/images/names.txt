@@ -1,5 +1,5 @@
-assets/images/player.png
-assets/images/bg.png
-assets/images/insideBrick.png
-assets/images/wallBrick.png
-assets/images/outsideBrick.png
+../game_dec_2017/assets/images/player.png
+../game_dec_2017/assets/images/bg.png
+../game_dec_2017/assets/images/insideBrick.png
+../game_dec_2017/assets/images/wallBrick.png
+../game_dec_2017/assets/images/outsideBrick.png
