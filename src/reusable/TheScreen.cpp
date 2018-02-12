@@ -11,8 +11,8 @@ TheScreen::~TheScreen(){
 	IMG_Quit();
 	//SDL_Quit();
 }
-void TheScreen::CreateWindow(){
-	window = SDL_CreateWindow("Mini Word Guessing Game",
+void TheScreen::CreateWindow(std::string name){
+	window = SDL_CreateWindow(name.c_str(),
 		 SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
 		 500,500,SDL_WINDOW_SHOWN|
 		 //SDL_WINDOW_BORDERLESS|

@@ -20,6 +20,7 @@ public:
 	vec2 getDirection();
 	vec2& getPosition();
 	float getAngle();
+	void setSize(Size size){this->size = size;}
 	Size& getSize();
 	std::string& getName();
 	void setID(int id){this->id = id;}

@@ -5,17 +5,16 @@
 #include"ClientNetwork.h"
 
 Game::Game()
-	:player(vec2(500,200),
-		Size(AssetsAccessor.getTexture("player").getSize().w*0.75,
-			AssetsAccessor.getTexture("player").getSize().h*0.75))
+:player(vec2(500,200),Size(0,0))
 {
 	isOnline = true;
-
+	running = true;
+	timeout = -1;
 }
 Game::~Game(){
-	if(isOnline){
-		Client.Disconnect(&player);
-	}
+	//if(isOnline){
+	//	Client.Disconnect(&player);
+	//}
 	for(int i = 0; i<bullets.size();i++){
 		delete bullets[i];
 		bullets[i] = NULL;
@@ -27,12 +26,20 @@ Game::~Game(){
 	}
 	SDL_Log("Destroyed Game");
 }
-void Game::connectServer(){
-	char ip[20];
+void Game::connectServer(const char*ipEntered){
+	char ip[40];
 	if(isOnline){
 		//std::cin.getline(ip,20);
-		strcpy(ip,"127.0.0.1");
+		if(strlen(ipEntered)<5)
+			strcpy(ip,"192.168.137.85");
+		else
+			strcpy(ip,ipEntered);
+		SDL_Log("Host: %s",ip);
 		isOnline = Client.Init(ip);
+		if(!isOnline){
+			SDL_Log("Offline");
+			return;
+		}
 		SDL_Log("Received map from server");
 		while(!Client.HasRecvedMap()){
 			Client.Recv(enemies,&player,frame);
@@ -41,6 +48,8 @@ void Game::connectServer(){
 }
 void Game::init(){
 	environment.putBricks(AssetsAccessor.getMap(),AssetsAccessor.getTexture("wallBrick").getSize());
+	player.setSize(Size(AssetsAccessor.getTexture("player").getSize().w*0.75,
+			AssetsAccessor.getTexture("player").getSize().h*0.75));
 	player.setPosition(environment.getInsideWallBricks().at(0)->getPosition());
 	player.setBullet("bullet",AssetsAccessor.getTexture("bullet").getSize(),10.0f);
 
@@ -81,6 +90,17 @@ void Game::handleEvent(SDL_Event&event){
 	if(event.type == SDL_MOUSEBUTTONDOWN){
 		bullets.push_back(player.shoot());
 	}
+
+	if(event.type == SDL_QUIT){
+		if(isOnline){
+			Client.Disconnect();
+			//isOnline = false;
+			timeout = SDL_GetTicks();
+		}
+		else
+			running = false;
+	}
+
 }
 void Game::draw(){
 	environment.draw();
@@ -92,9 +112,14 @@ void Game::draw(){
 		AssetsAccessor.getTexture(enemies[i]->getName()).render(enemies[i]->getPosition(),Size(-1,-1),
 			enemies[i]->getAngle());
 }
+bool Game::isRunning()const{
+	return running;
+}
 void Game::update(){
 	environment.wallCollide(player);
 	environment.wallCollide(bullets);
+	for(int i =0; i<enemies.size();i++)
+		enemies[i]->collide(player);
 	for(int i = 0; i<bullets.size();i++){
 		Bullet*bullet = ((Bullet*)bullets[i]);
 		bullet->move();
@@ -109,6 +134,12 @@ void Game::update(){
 	if(isOnline){
 		Client.Send(&player);
 		Client.Recv(enemies,&player,frame);
+		if(Client.HasDisconnected())
+			running = false;
+		if(timeout>-1)
+		if(SDL_GetTicks()-timeout>2000)
+			running = false;
+
 	}
 }
 

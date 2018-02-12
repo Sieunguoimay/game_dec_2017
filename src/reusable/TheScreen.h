@@ -17,7 +17,7 @@ public:
 	//this is singleton
 	static TheScreen&Instance();
 
-	void CreateWindow();
+	void CreateWindow(std::string name = "Window's Name");
 
 	SDL_Renderer*GetRenderer();
 	SDL_Window*GetWindow();

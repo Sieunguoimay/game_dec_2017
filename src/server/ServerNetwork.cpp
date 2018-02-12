@@ -123,7 +123,14 @@ void ServerNetwork::Update(){
 					}
 				}else if(num==2){
 					for(int k=0; k<socketvector.size();k++){
-						if(k==i)continue;
+						if(k==i){
+							char msg[] = "4 \n";
+							int size = 0;
+							int len = strlen(msg)+1;
+							while(size<len){
+								size+=SDLNet_TCP_Send(socketvector[i].socket,msg+size,len-size);
+							}
+						}
 						SDLNet_TCP_Send(socketvector[k].socket,tmp,strlen(tmp)+1);
 					}
 					SDL_Log("Disconnected with player %d",socketvector[i].id);

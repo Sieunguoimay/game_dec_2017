@@ -61,6 +61,7 @@ void render_while_loading(){
 	}		
 
 }
+char ip[40];
 void main_loop(){
 	/*window = SDL_CreateWindow("hello",
 		SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,
@@ -69,7 +70,8 @@ void main_loop(){
 		SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED);
 	*/
 
-	Screen.CreateWindow();
+	Screen.CreateWindow("Game Ban Nhau");
+	std::cout<<"Wrong\n";
 	Game game;
 	//at this point, initiating is done, send the signal to the load_data thread to start
 	{
@@ -78,23 +80,19 @@ void main_loop(){
 	}cv.notify_all();//tell them we are ready
 
 	//network goes here...
-	game.connectServer();
 	{
 		std::unique_lock<std::mutex> lk(initiating_mutex);
 		cv.wait(lk,[]{
 			SDL_Log("Waiting for data... Draw anything here!");
 			return loaded;});
 	}
+	game.connectServer(ip);
 
 	SDL_Log("Enter main loop");
 	SDL_Event event;
-	running = true;
 	game.init();
-	while(running){
+	while(game.isRunning()){
 		while(SDL_PollEvent(&event)){
-			if(event.type == SDL_QUIT){
-				running = false;
-			}
 			game.handleEvent(event);
 			CameraAccessor.HandleEvent(event);
 		}
@@ -115,13 +113,15 @@ int main(int argc, char**argv){
 		ss<<argv[i]<<" ";
 	}
 	if(argc == 2){
-		float a;ss>>a;
-		windowSize.set(WIDTH*a,HEIGHT*a);
+		//float a;ss>>a;
+		//windowSize.set(WIDTH*a,HEIGHT*a);
+		ss>>ip;
+		std::cout<<"Entered IP: "<<ip<<"\n";
 	}
 	else{
-		windowSize.set(WIDTH, HEIGHT);
-		ss>>windowSize.w;
-		ss>>windowSize.h;
+	//	windowSize.set(WIDTH, HEIGHT);
+	//	ss>>windowSize.w;
+	//	ss>>windowSize.h;
 	}
 
 

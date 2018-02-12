@@ -5,6 +5,8 @@
 
 ClientNetwork::ClientNetwork(){
 	receivedMap = false;
+	disconnected = false;
+	disconnectNow = false;
 }
 ClientNetwork&ClientNetwork::Instance(){
 	static ClientNetwork instance;
@@ -13,15 +15,17 @@ ClientNetwork&ClientNetwork::Instance(){
 bool ClientNetwork::Init(const char*ipchar){
 	SDLNet_Init();
 	IPaddress ip;
-	if(SDLNet_ResolveHost(&ip, ipchar,1234)==-1){
-		SDL_Log("There was an error with connection");
+	if(SDLNet_ResolveHost(&ip, ipchar,9000)==-1){
+		SDL_Log("There was an error with resolving host");
 		return false;
 	}
+	SDL_Log("Resolved host successfully");
 	connection = SDLNet_TCP_Open(&ip);
 	if(connection==NULL){
-		SDL_Log("There was an error with connection");		
+		SDL_Log("There was an error with TCP open");		
 		return false;
 	}
+	SDL_Log("Opened Connection");
 	server = SDLNet_AllocSocketSet(1);
 	SDLNet_TCP_AddSocket(server,connection);
 	SDL_Log("Inited Client Network");
@@ -34,7 +38,7 @@ ClientNetwork::~ClientNetwork(){
 	SDLNet_Quit();
 }
 void ClientNetwork::Send(Player*p){
-	if(p->isReady()){//if player is 
+	if(p->isReady()&&!disconnectNow){//if player is 
 		vec2 pos = p->getPosition();
 		//1-id-position-angle
 		//1 means send every frame
@@ -48,7 +52,7 @@ void ClientNetwork::Send(Player*p){
 	}
 }
 void ClientNetwork::SendShot(Player*p,int id){
-	if(p->isReady()){
+	if(p->isReady()&&!disconnectNow){
 		sprintf(tmp,"3 %d %d",id,p->getID());
 		int size = 0;
 		int len = strlen(tmp)+1;
@@ -57,7 +61,7 @@ void ClientNetwork::SendShot(Player*p,int id){
 		}
 	}
 }
-void ClientNetwork::Recv(std::vector<NonCollisionObject*>&enemies,Player*p,std::vector<unsigned int>f){
+void ClientNetwork::Recv(std::vector<HardObject*>&enemies,Player*p,std::vector<unsigned int>f){
 	while(SDLNet_CheckSockets(server,0)>0&&SDLNet_SocketReady(connection)){
 		int offset = 0;
 		do{
@@ -87,7 +91,7 @@ void ClientNetwork::Recv(std::vector<NonCollisionObject*>&enemies,Player*p,std::
 				}
 			}
 			if(i>=enemies.size()){
-				enemies.push_back(new NonCollisionObject(vec2(500,200),
+				enemies.push_back(new HardObject(vec2(500,200),
 					Size(AssetsAccessor.getTexture("player").getSize().w*0.5,
 						AssetsAccessor.getTexture("player").getSize().h*0.5),"player"));
 				enemies[enemies.size()-1]->setID(id);
@@ -105,19 +109,27 @@ void ClientNetwork::Recv(std::vector<NonCollisionObject*>&enemies,Player*p,std::
 			int tmp1, tmp2;
 			sscanf(tmp,"3 %d %d",&tmp1,&tmp2);
 			SDL_Log("Shotted by %d",tmp2);
-		}else if(type==4){
-
+		}else if(type==4){//disconnect accepted
+			SDL_Log("I got Accepted");
+			disconnected = true;
 		}
 	}
-}
-void ClientNetwork::Disconnect(Player*p){
-	sprintf(tmp,"2 %d \n",p->getID());
-	int size = 0;
-	int len = strlen(tmp)+1;
-	while(size<len){
-		size+=SDLNet_TCP_Send(connection,tmp+size,len-size);
+
+	if(disconnectNow){
+		SDL_Log("Disconnect now");
+		sprintf(tmp,"2 %d \n",p->getID());
+		int size = 0;
+		int len = strlen(tmp)+1;
+		while(size<len){
+			size+=SDLNet_TCP_Send(connection,tmp+size,len-size);
+		}
+		//disconnectNow = false;
 	}
-	SDL_Log("Disconnected to server");
+
+}
+void ClientNetwork::Disconnect(){
+	//SDL_Log("Disconnected to server");
+	disconnectNow = true;
 }
 
 void ClientNetwork::SendMsg(char msg[1400]){

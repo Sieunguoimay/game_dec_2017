@@ -6,7 +6,7 @@
 #include<string>
 #define SDL_reinternet_cast(type, expression) reinternet_cast<type>(expression)
 #define MAX_CONNECTION_NUM 30
-#define PORT 1234
+#define PORT 9000
 struct data{
 	TCPsocket socket;
 	Uint32 timeout;
