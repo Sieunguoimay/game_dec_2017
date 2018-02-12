@@ -1,7 +1,7 @@
 #include"game_object.h"
 
-NonCollisionObject::NonCollisionObject(vec2 position, Size size)
-:position(position),size(size),angle(0){}
+NonCollisionObject::NonCollisionObject(vec2 position, Size size,std::string name)
+:position(position),size(size),angle(0),name(name),id(-1){}
 NonCollisionObject::~NonCollisionObject(){}
 
 void NonCollisionObject::setPosition(vec2 pos){
@@ -30,11 +30,14 @@ float NonCollisionObject::getAngle(){
 Size& NonCollisionObject::getSize(){
 	return size;
 }
+std::string& NonCollisionObject::getName(){
+	return name;
+}
 
 //
 
-CollisionObject::CollisionObject(vec2 position, Size size)
-:NonCollisionObject(position,size){
+CollisionObject::CollisionObject(vec2 position, Size size,std::string name)
+:NonCollisionObject(position,size,name){
 }
 CollisionObject::~CollisionObject(){}
 
@@ -82,8 +85,8 @@ std::vector<vec2> CollisionObject::getAxis(std::vector<vec2>&c1,std::vector<vec2
 }
 
 
-HardObject::HardObject(vec2 position, Size size)
-:CollisionObject(position,size){}
+HardObject::HardObject(vec2 position, Size size,std::string name)
+:CollisionObject(position,size,name){}
 HardObject::~HardObject(){}
 
 bool HardObject::collide(CollisionObject&other){

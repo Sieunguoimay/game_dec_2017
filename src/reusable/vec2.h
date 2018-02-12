@@ -28,6 +28,7 @@ public:
 	vec2& normalize();
 	void set(float x, float y);
 	void set(vec2 v);
+	void truncate(float max);
 	vec2 getPerpendicular() const;
 	vec2 operator+(const vec2&v)const;
 	vec2 operator-(const vec2&v)const;

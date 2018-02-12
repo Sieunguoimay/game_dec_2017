@@ -28,6 +28,15 @@ void vec2::set(vec2 v){
 	this->x = v.x;
 	this->y = v.y;
 }
+void vec2::truncate(float max){
+	if (this->length() > max)
+	{
+	this->normalize();
+
+	*this *= max;
+	} 
+
+}
 vec2 vec2::getPerpendicular() const{
 	return vec2(y,-x).normalize();
 }

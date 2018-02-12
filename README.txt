@@ -23,4 +23,8 @@ what gonna do for the stage 1 - Setup Programming Environment:
 	- in ubuntu printf '%s\n' * >> names.txt
 2/1/2017
 	Uploaded onto Github - available online access :))
-	g++ src/*.cpp -o bin/main -IE:/SDL_HOME/include -LE:/SDL_HOME/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+	g++ src/*.cpp -o bin/main -IE:/CodingSpace/Libraries/SDL_HOME/include -LE:/CodingSpace/Libraries/SDL_HOME/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+
+g++ src/*.o src/reusable/*.o -o bin/main -LE:/CodingSpace/Libraries/SDL_HOME/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_net
+
+g++ -c ClientNetwork.cpp -IE:/CodingSpace/Libraries/SDL_HOME/include

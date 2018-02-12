@@ -1,4 +1,6 @@
 #include"Texture.h"
+#include"TheScreen.h"
+#include"Camera.h"
 SDL_Color Color(int r, int g, int b, int a){
 	SDL_Color color;
 	color.r = r;
@@ -15,12 +17,13 @@ SDL_Rect getRect(int x, int y, int w, int h){
 	rect.h = h;
 	return rect;	
 }
-Texture::Texture(std::string path,SDL_Renderer*renderer,int row, int col,Size windowSize)
-	:renderer(renderer),col(col),row(row),drawRatio((float)windowSize.w/(float)WINDOW_W,(float)windowSize.h/(float)WINDOW_H){
+Texture::Texture(std::string path,int row, int col)
+	:col(col),row(row),drawRatio(CameraAccessor.sizeRatio,CameraAccessor.sizeRatio){
+
 	SDL_Surface*surface = IMG_Load(path.c_str());
 	if (surface) {
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0xff, 0x00, 0xff));//always pink
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
+		texture = SDL_CreateTextureFromSurface(Screen.GetRenderer(), surface);
 		sprite.w = surface->w / col;
 		sprite.h = surface->h / row;
 		sprite.x = 0;
@@ -33,9 +36,9 @@ Texture::Texture(std::string path,SDL_Renderer*renderer,int row, int col,Size wi
 	SDL_FreeSurface(surface);
 }
 
-Texture::Texture(SDL_Surface*surface,SDL_Renderer*renderer,int col, int row,Size windowSize)
-	:renderer(renderer),col(col),row(row),drawRatio((float)windowSize.w/(float)WINDOW_W,(float)windowSize.h/(float)WINDOW_H){
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
+Texture::Texture(SDL_Surface*surface,int col, int row)
+	:col(col),row(row),drawRatio(CameraAccessor.sizeRatio,CameraAccessor.sizeRatio){
+		texture = SDL_CreateTextureFromSurface(Screen.GetRenderer(), surface);
 		sprite.w = surface->w/col;
 		sprite.h = surface->h/row;
 		sprite.x = 0;
@@ -44,17 +47,19 @@ Texture::Texture(SDL_Surface*surface,SDL_Renderer*renderer,int col, int row,Size
 Texture::~Texture(){
 	SDL_DestroyTexture(texture);
 	texture = NULL;
-	renderer = NULL;
 }
 //use this function to render with the actual position - top-left
 void Texture::render(int x, int y, int w, int h,double angle,int index){
 	if(w==-1) w = sprite.w;
 	if(h==-1) h = sprite.h;
-	SDL_Rect rect = getRect(x*drawRatio.x,y*drawRatio.y,w*drawRatio.x,h*drawRatio.y);
+	SDL_Rect rect = getRect(
+		(x-CameraAccessor.GetPosition().x)*drawRatio.x,
+		(y-CameraAccessor.GetPosition().y)*drawRatio.y,
+		w*drawRatio.x,h*drawRatio.y);
 	index%=getSpriteNum();//in case the input index is out of range
 	sprite.x = sprite.w*(index%col);
 	sprite.y = sprite.h*(index/col);
-	SDL_RenderCopyEx(renderer,texture,&sprite,&rect,angle,NULL,SDL_FLIP_NONE);
+	SDL_RenderCopyEx(Screen.GetRenderer(),texture,&sprite,&rect,angle,NULL,SDL_FLIP_NONE);
 }
 /*
 void Texture::render(vec2&pos,Size&size,double angle,int index){
@@ -73,12 +78,13 @@ void Texture::render(vec2 pos,Size size,double angle,int index){
 	if(size.w==-1) size.w = sprite.w;
 	if(size.h==-1) size.h = sprite.h;
 	SDL_Rect rect = getRect(
-		(pos.x-size.w/2)*drawRatio.x,(pos.y-size.h/2)*drawRatio.y,
+		(pos.x-size.w/2 - CameraAccessor.GetPosition().x)*drawRatio.x,
+		(pos.y-size.h/2 - CameraAccessor.GetPosition().y)*drawRatio.y,
 		size.w*drawRatio.x,size.h*drawRatio.y);
 	index%=getSpriteNum();//in case the input index is out of range
 	sprite.x = sprite.w*(index%col);
 	sprite.y = sprite.h*(index/col);
-	SDL_RenderCopyEx(renderer,texture,&sprite,&rect,angle,NULL,SDL_FLIP_NONE);
+	SDL_RenderCopyEx(Screen.GetRenderer(),texture,&sprite,&rect,angle,NULL,SDL_FLIP_NONE);
 }
 void Texture::setColor(SDL_Color&color){
 	SDL_SetTextureColorMod(texture, color.r, color.g, color.b);

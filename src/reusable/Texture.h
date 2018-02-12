@@ -13,13 +13,10 @@ class Texture{
 	SDL_Texture*texture;
 	SDL_Rect sprite;
 	int row,col;
-	SDL_Renderer*renderer;
 public:
 	vec2 drawRatio;
-	Texture(std::string path,SDL_Renderer*renderer,int row = 1,int col = 1,
-		Size windowSize = Size(WINDOW_W,WINDOW_H));
-	Texture(SDL_Surface*surface,SDL_Renderer*renderer,int row = 1,int col = 1,
-		Size windowSize = Size(WINDOW_W,WINDOW_H));
+	Texture(std::string path,int row = 1,int col = 1);
+	Texture(SDL_Surface*surface,int row = 1,int col = 1);
 
 	~Texture();
 	void render(int x, int y, int w = -1, int h = -1,double angle = 0,int index = 0);

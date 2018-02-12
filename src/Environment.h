@@ -1,7 +1,7 @@
 #ifndef ENVIRONMENT
 #define ENVIRONMENT
 #include"game_object.h"
-#include"Assets.h"
+#include"reusable/Assets.h"
 class Environment{
 	std::vector<HardObject*>wallBricks;
 	std::vector<NonCollisionObject*>outsideBricks;
@@ -10,7 +10,7 @@ public:
 	Environment();
 	~Environment();
 	void putBricks(MapMatrix&map,Size size = Size(100,100));
-	void draw(Assets&assets);
+	void draw();
 	void wallCollide(std::vector<CollisionObject*>&objects);
 	void wallCollide(CollisionObject&object);//overloading
 	std::vector<NonCollisionObject*>& getInsideWallBricks();

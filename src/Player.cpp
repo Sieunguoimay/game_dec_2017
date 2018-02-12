@@ -1,14 +1,25 @@
 #include"Player.h"
 
-Player::Player(vec2 pos, Size size)
-:HardObject(pos,size)
+Player::Player(vec2 pos, Size size,float speed)
+:HardObject(pos,size,"player"),speed(speed)
 {
-	speed = 2.0f;
 	angle = 0;
 	newAngle = 0;
+	isready = false;
 }
 Player::~Player(){
 }
+void Player::setBullet(std::string name, Size size,float speed){
+	bulletType.name = name;
+	bulletType.size = size;
+	bulletType.speed = speed;
+}
+
+Bullet* Player::shoot(){
+	return new Bullet(position+getDirection()*size.w,getDirection(),
+		bulletType.size,bulletType.name,bulletType.speed);
+}
+
 void Player::move(){
 	if(moveDir.left) velocity.x = -1;
 	if(moveDir.right) velocity.x = 1;
